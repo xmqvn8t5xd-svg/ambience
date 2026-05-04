@@ -18,13 +18,10 @@ body {
   left: 50%;
   transform: translateX(-50%);
   width: 420px;
-  padding: 18px;
-  background: rgb(192,192,192);
-  backdrop-filter: blur(18px);
-  border-radius: 18px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 14px;
+
 }
 
 .item {
@@ -46,19 +43,19 @@ body {
   margin: 0 auto 6px;
 }
 
-/* 🎚 SLIDER BASE */
+/* 🎚 SLIDER */
 .slider {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
   height: 4px;
-  background: rgba(255,255,255,0.3);
+  background: black;
   border-radius: 10px;
   outline: none;
   margin-top: 6px;
 }
 
-/* 🎚 SLIDER ACTIVE */
+/* activo */
 .slider.active {
   background: rgba(205, 227, 194, 0.6);
 }
@@ -67,7 +64,7 @@ body {
   -webkit-appearance: none;
   width: 14px;
   height: 14px;
-  background: white;
+  background: black;
   border-radius: 50%;
   cursor: pointer;
   margin-top: -5px;
@@ -97,28 +94,28 @@ body {
 <div class="panel">
 
   <div class="item" onclick="toggleSound('coffee')">
-    <img class="icon" src="https://golden-hour-roast.vercel.app/static/media/soundIcon%20(4).9a3e299f07c60addb4fa.png">
+    <img class="icon" src="https://raw.githubusercontent.com/xmqvn8t5xd-svg/ambience/main/cafe.png">
     Coffee
     <input class="slider" type="range" min="0" max="1" step="0.01"
       oninput="setVolume('coffee', this.value)">
   </div>
 
   <div class="item" onclick="toggleSound('murmur')">
-    <img class="icon" src="https://golden-hour-roast.vercel.app/static/media/soundIcon%20(5).4d57f69ccfde00a07624.png">
+    <img class="icon" src="https://raw.githubusercontent.com/xmqvn8t5xd-svg/ambience/main/murmur.png">
     Murmur
     <input class="slider" type="range" min="0" max="1" step="0.01"
       oninput="setVolume('murmur', this.value)">
   </div>
 
   <div class="item" onclick="toggleSound('fire')">
-    <img class="icon" src="https://golden-hour-roast.vercel.app/static/media/soundIcon%20(1).196d1e2ebd1426d32945.png">
+    <img class="icon" src="https://raw.githubusercontent.com/xmqvn8t5xd-svg/ambience/main/fire.png">
     Fire
     <input class="slider" type="range" min="0" max="1" step="0.01"
       oninput="setVolume('fire', this.value)">
   </div>
 
   <div class="item" onclick="toggleSound('rain')">
-    <img class="icon" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='white'%3E%3Cpath d='M20 50a12 12 0 1 1 2-23 14 14 0 0 1 26 5h2a10 10 0 0 1 0 20H20z'/%3E%3Cpath d='M22 52v6M30 52v6M38 52v6' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
+    <img class="icon" src="https://raw.githubusercontent.com/xmqvn8t5xd-svg/ambience/main/rain.png">
     Rain
     <input class="slider" type="range" min="0" max="1" step="0.01"
       oninput="setVolume('rain', this.value)">
@@ -140,7 +137,7 @@ for (let k in sounds) {
   sounds[k].volume = 0;
 }
 
-/* 🔓 SOLO desbloquea audio, NO reproduce */
+/* 🔓 unlock audio (sin autoplay) */
 let unlocked = false;
 document.body.addEventListener("click", () => {
   if (unlocked) return;
@@ -186,7 +183,7 @@ function toggleSound(name) {
   }
 }
 
-/* 🎚 volume */
+/* 🎚 volumen */
 function setVolume(name, value) {
   const s = sounds[name];
   const slider = document.querySelector(`input[oninput*="${name}"]`);
@@ -203,7 +200,7 @@ function setVolume(name, value) {
   localStorage.setItem("amb_" + name, value);
 }
 
-/* 💾 restore (SIN AUTOPLAY) */
+/* 💾 restore state */
 window.addEventListener("load", () => {
   for (let k in sounds) {
     const v = localStorage.getItem("amb_" + k);
@@ -213,6 +210,7 @@ window.addEventListener("load", () => {
       sounds[k].volume = val;
 
       const slider = document.querySelector(`input[oninput*="${k}"]`);
+
       if (slider) slider.value = val;
     }
   }
