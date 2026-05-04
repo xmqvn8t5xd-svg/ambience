@@ -3,119 +3,175 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Ambient Mixer</title>
 
 <style>
-  body {
-    margin: 0;
-    font-family: system-ui, sans-serif;
-    background: #0f1115;
-    color: #eaeaea;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px;
-  }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  overflow: hidden;
+  color: white;
+}
 
-  h1 {
-    font-weight: 500;
-    margin-bottom: 30px;
-    letter-spacing: 1px;
-  }
+.panel {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 420px;
+  padding: 18px;
+  background: rgb(192,192,192);
+  backdrop-filter: blur(18px);
+  border-radius: 18px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(140px, 1fr));
-    gap: 15px;
-    width: 100%;
-    max-width: 400px;
-  }
+.item {
+  text-align: center;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: 0.2s;
+}
 
-  .sound {
-    background: #1a1d24;
-    border-radius: 12px;
-    padding: 15px;
-    text-align: center;
-    cursor: pointer;
-    transition: 0.2s;
-    user-select: none;
-  }
+.item:hover {
+  transform: scale(1.05);
+  opacity: 1;
+}
 
-  .sound:hover {
-    background: #222733;
-  }
+.icon {
+  width: 30px;
+  height: 30px;
+  display: block;
+  margin: 0 auto 6px;
+}
 
-  .active {
-    background: #2d3342;
-  }
-
-  .label {
-    font-size: 14px;
-    margin-bottom: 10px;
-    display: block;
-  }
-
-  input[type="range"] {
-    width: 100%;
-    display: none;
-  }
-
-  .active input {
-    display: block;
-  }
-
+.slider {
+  width: 100%;
+  margin-top: 6px;
+}
 </style>
 </head>
 
 <body>
 
-<h1>🌿 Ambient Mixer</h1>
+<div class="panel">
 
-<div class="grid">
-
-  <div class="sound" onclick="toggleSound(this, 'rain')">
-    <span class="label">🌧️ Rain</span>
-    <audio id="rain" loop src="RAIN.mp3"></audio>
-    <input type="range" min="0" max="1" step="0.01" value="0.5"
-      oninput="document.getElementById('rain').volume = this.value;">
+  <div class="item" onclick="toggleSound('coffee')">
+    <img class="icon" src="https://golden-hour-roast.vercel.app/static/media/soundIcon%20(4).9a3e299f07c60addb4fa.png">
+    Coffee
+    <input class="slider" type="range" min="0" max="1" step="0.01"
+      oninput="setVolume('coffee', this.value)">
   </div>
 
-  <div class="sound" onclick="toggleSound(this, 'ocean')">
-    <span class="label">🌊 cafe</span>
-    <audio id="ocean" loop src="CAFE.mp3"></audio>
-    <input type="range" min="0" max="1" step="0.01" value="0.5"
-      oninput="document.getElementById('ocean').volume = this.value;">
+  <div class="item" onclick="toggleSound('vinyl')">
+    <img class="icon" src="https://golden-hour-roast.vercel.app/static/media/soundIcon%20(5).4d57f69ccfde00a07624.png">
+    Vinyl
+    <input class="slider" type="range" min="0" max="1" step="0.01"
+      oninput="setVolume('vinyl', this.value)">
   </div>
 
-  <div class="sound" onclick="toggleSound(this, 'fire')">
-    <span class="label">🔥 Fire</span>
-    <audio id="fire" loop src="FIRE.mp3"></audio>
-    <input type="range" min="0" max="1" step="0.01" value="0.5"
-      oninput="document.getElementById('fire').volume = this.value;">
+  <div class="item" onclick="toggleSound('fire')">
+    <img class="icon" src="https://golden-hour-roast.vercel.app/static/media/soundIcon%20(1).196d1e2ebd1426d32945.png">
+    Fire
+    <input class="slider" type="range" min="0" max="1" step="0.01"
+      oninput="setVolume('fire', this.value)">
   </div>
 
-  <div class="sound" onclick="toggleSound(this, 'forest')">
-    <span class="label">🌲 murmur</span>
-    <audio id="forest" loop src="MURMUR.mp3"></audio>
-    <input type="range" min="0" max="1" step="0.01" value="0.5"
-      oninput="document.getElementById('forest').volume = this.value;">
+  <div class="item" onclick="toggleSound('rain')">
+    <img class="icon" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='white'%3E%3Cpath d='M20 50a12 12 0 1 1 2-23 14 14 0 0 1 26 5h2a10 10 0 0 1 0 20H20z'/%3E%3Cpath d='M22 52v6M30 52v6M38 52v6' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
+    Rain
+    <input class="slider" type="range" min="0" max="1" step="0.01"
+      oninput="setVolume('rain', this.value)">
   </div>
 
 </div>
 
 <script>
-function toggleSound(el, id) {
-  const audio = document.getElementById(id);
 
-  if (audio.paused) {
-    audio.volume = 0.5;
-    audio.play();
-    el.classList.add("active");
+// 🎧 AUDIO ENGINE
+const sounds = {
+  coffee: new Audio("CAFE.mp3"),
+  vinyl: new Audio("MURMUR.mp3"),
+  fire: new Audio("FIRE.mp3"),
+  rain: new Audio("RAIN.mp3")
+};
+
+// configuración inicial
+for (let k in sounds) {
+  sounds[k].loop = true;
+  sounds[k].volume = 0;
+}
+
+// 🔓 desbloquear audio (necesario en navegadores)
+let unlocked = false;
+document.body.addEventListener("click", () => {
+  if (unlocked) return;
+  unlocked = true;
+
+  for (let k in sounds) {
+    sounds[k].play().then(() => {
+      sounds[k].pause();
+      sounds[k].currentTime = 0;
+    }).catch(()=>{});
+  }
+}, { once: true });
+
+// 🌊 fade suave
+function fade(audio, target) {
+  function step() {
+    let diff = target - audio.volume;
+
+    if (Math.abs(diff) < 0.01) {
+      audio.volume = target;
+      return;
+    }
+
+    audio.volume += diff * 0.08;
+    requestAnimationFrame(step);
+  }
+  step();
+}
+
+// 🎧 activar/desactivar sonido
+function toggleSound(name) {
+  const s = sounds[name];
+
+  if (s.paused || s.volume === 0) {
+    s.play();
+    fade(s, 0.6);
   } else {
-    audio.pause();
-    el.classList.remove("active");
+    fade(s, 0);
+    setTimeout(() => s.pause(), 800);
   }
 }
+
+// 🎚 control de volumen
+function setVolume(name, value) {
+  const s = sounds[name];
+  value = parseFloat(value);
+
+  if (value > 0 && s.paused) s.play();
+
+  s.volume = value;
+
+  localStorage.setItem("amb_" + name, value);
+}
+
+// 💾 restaurar estado
+window.addEventListener("load", () => {
+  for (let k in sounds) {
+    const v = localStorage.getItem("amb_" + k);
+
+    if (v !== null) {
+      const val = parseFloat(v);
+      sounds[k].volume = val;
+
+      if (val > 0) sounds[k].play().catch(()=>{});
+    }
+  }
+});
+
 </script>
 
 </body>
