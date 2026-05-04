@@ -58,12 +58,11 @@ body {
   margin-top: 6px;
 }
 
-/* 🎚 SLIDER ACTIVE (solo color del slider) */
+/* 🎚 SLIDER ACTIVE */
 .slider.active {
   background: rgba(205, 227, 194, 0.6);
 }
 
-/* thumb blanco */
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 14px;
@@ -72,7 +71,6 @@ body {
   border-radius: 50%;
   cursor: pointer;
   margin-top: -5px;
-  transition: background 0.2s ease;
 }
 
 .slider.active::-webkit-slider-thumb {
@@ -106,7 +104,7 @@ body {
   </div>
 
   <div class="item" onclick="toggleSound('murmur')">
-    <img class="icon" src="https://res.cloudinary.com/df3r3efat/image/upload/v1777918508/cyarqmmebfoebrixawdd.png">
+    <img class="icon" src="https://golden-hour-roast.vercel.app/static/media/soundIcon%20(5).4d57f69ccfde00a07624.png">
     Murmur
     <input class="slider" type="range" min="0" max="1" step="0.01"
       oninput="setVolume('murmur', this.value)">
@@ -142,6 +140,7 @@ for (let k in sounds) {
   sounds[k].volume = 0;
 }
 
+/* 🔓 SOLO desbloquea audio, NO reproduce */
 let unlocked = false;
 document.body.addEventListener("click", () => {
   if (unlocked) return;
@@ -155,6 +154,7 @@ document.body.addEventListener("click", () => {
   }
 }, { once: true });
 
+/* 🌊 fade */
 function fade(audio, target) {
   function step() {
     let diff = target - audio.volume;
@@ -170,6 +170,7 @@ function fade(audio, target) {
   step();
 }
 
+/* 🎧 toggle */
 function toggleSound(name) {
   const s = sounds[name];
   const slider = document.querySelector(`input[oninput*="${name}"]`);
@@ -185,6 +186,7 @@ function toggleSound(name) {
   }
 }
 
+/* 🎚 volume */
 function setVolume(name, value) {
   const s = sounds[name];
   const slider = document.querySelector(`input[oninput*="${name}"]`);
@@ -201,6 +203,7 @@ function setVolume(name, value) {
   localStorage.setItem("amb_" + name, value);
 }
 
+/* 💾 restore (SIN AUTOPLAY) */
 window.addEventListener("load", () => {
   for (let k in sounds) {
     const v = localStorage.getItem("amb_" + k);
@@ -210,11 +213,7 @@ window.addEventListener("load", () => {
       sounds[k].volume = val;
 
       const slider = document.querySelector(`input[oninput*="${k}"]`);
-
-      if (val > 0) {
-        sounds[k].play().catch(()=>{});
-        if (slider) slider.classList.add("active");
-      }
+      if (slider) slider.value = val;
     }
   }
 });
