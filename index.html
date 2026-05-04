@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ambient Mixer</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    background: #0f1115;
+    color: #eaeaea;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+  }
+
+  h1 {
+    font-weight: 500;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+    gap: 15px;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .sound {
+    background: #1a1d24;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s;
+    user-select: none;
+  }
+
+  .sound:hover {
+    background: #222733;
+  }
+
+  .active {
+    background: #2d3342;
+  }
+
+  .label {
+    font-size: 14px;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    display: none;
+  }
+
+  .active input {
+    display: block;
+  }
+
+</style>
+</head>
+
+<body>
+
+<h1>🌿 Ambient Mixer</h1>
+
+<div class="grid">
+
+  <div class="sound" onclick="toggleSound(this, 'rain')">
+    <span class="label">🌧️ Rain</span>
+    <audio id="rain" loop src="YOUR_RAIN.mp3"></audio>
+    <input type="range" min="0" max="1" step="0.01" value="0.5"
+      oninput="document.getElementById('rain').volume = this.value;">
+  </div>
+
+  <div class="sound" onclick="toggleSound(this, 'ocean')">
+    <span class="label">🌊 Ocean</span>
+    <audio id="ocean" loop src="YOUR_OCEAN.mp3"></audio>
+    <input type="range" min="0" max="1" step="0.01" value="0.5"
+      oninput="document.getElementById('ocean').volume = this.value;">
+  </div>
+
+  <div class="sound" onclick="toggleSound(this, 'fire')">
+    <span class="label">🔥 Fire</span>
+    <audio id="fire" loop src="YOUR_FIRE.mp3"></audio>
+    <input type="range" min="0" max="1" step="0.01" value="0.5"
+      oninput="document.getElementById('fire').volume = this.value;">
+  </div>
+
+  <div class="sound" onclick="toggleSound(this, 'forest')">
+    <span class="label">🌲 Forest</span>
+    <audio id="forest" loop src="YOUR_FOREST.mp3"></audio>
+    <input type="range" min="0" max="1" step="0.01" value="0.5"
+      oninput="document.getElementById('forest').volume = this.value;">
+  </div>
+
+</div>
+
+<script>
+function toggleSound(el, id) {
+  const audio = document.getElementById(id);
+
+  if (audio.paused) {
+    audio.volume = 0.5;
+    audio.play();
+    el.classList.add("active");
+  } else {
+    audio.pause();
+    el.classList.remove("active");
+  }
+}
+</script>
+
+</body>
+</html>
