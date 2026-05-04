@@ -185,19 +185,21 @@ function toggleSound(name) {
   }
 }
 
-/* 🎚 SOLO volumen (sin pause aquí) */
 function setVolume(name, value) {
   const s = sounds[name];
   const slider = document.querySelector(`input[oninput*="${name}"]`);
   value = parseFloat(value);
 
+  // SIEMPRE actualizar volumen directamente
   s.volume = value;
 
+  // si el usuario mueve el slider > 0, asegúrate de que suene
   if (value > 0) {
-    if (s.paused) s.play();
+    s.play().catch(() => {});
     if (slider) slider.classList.add("active");
   } else {
     if (slider) slider.classList.remove("active");
+    s.pause();
   }
 
   localStorage.setItem("amb_" + name, value);
