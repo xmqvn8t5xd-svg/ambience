@@ -12,6 +12,7 @@ body {
   color: white;
 }
 
+/* 🎯 sin fondo */
 .panel {
   position: absolute;
   top: 15%;
@@ -21,19 +22,21 @@ body {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 14px;
-
 }
 
 .item {
   text-align: center;
   cursor: pointer;
-  opacity: 0.85;
+  opacity: 0.9;
   transition: 0.2s;
+  padding: 8px;
+  border-radius: 12px;
 }
 
 .item:hover {
   transform: scale(1.05);
   opacity: 1;
+  background: rgba(255,255,255,0.05);
 }
 
 .icon {
@@ -49,13 +52,12 @@ body {
   appearance: none;
   width: 100%;
   height: 4px;
-  background: black;
+  background: rgba(255,255,255,0.3);
   border-radius: 10px;
   outline: none;
   margin-top: 6px;
 }
 
-/* activo */
 .slider.active {
   background: rgba(205, 227, 194, 0.6);
 }
@@ -64,7 +66,7 @@ body {
   -webkit-appearance: none;
   width: 14px;
   height: 14px;
-  background: black;
+  background: white;
   border-radius: 50%;
   cursor: pointer;
   margin-top: -5px;
@@ -137,7 +139,7 @@ for (let k in sounds) {
   sounds[k].volume = 0;
 }
 
-/* 🔓 unlock audio (sin autoplay) */
+/* 🔓 unlock audio */
 let unlocked = false;
 document.body.addEventListener("click", () => {
   if (unlocked) return;
@@ -167,12 +169,12 @@ function fade(audio, target) {
   step();
 }
 
-/* 🎧 toggle */
+/* 🎧 toggle (solo aquí se pausa) */
 function toggleSound(name) {
   const s = sounds[name];
   const slider = document.querySelector(`input[oninput*="${name}"]`);
 
-  if (s.paused || s.volume === 0) {
+  if (s.paused) {
     s.play();
     fade(s, 0.6);
     if (slider) slider.classList.add("active");
@@ -183,11 +185,13 @@ function toggleSound(name) {
   }
 }
 
-/* 🎚 volumen */
+/* 🎚 SOLO volumen (sin pause aquí) */
 function setVolume(name, value) {
   const s = sounds[name];
   const slider = document.querySelector(`input[oninput*="${name}"]`);
   value = parseFloat(value);
+
+  s.volume = value;
 
   if (value > 0) {
     if (s.paused) s.play();
@@ -196,11 +200,10 @@ function setVolume(name, value) {
     if (slider) slider.classList.remove("active");
   }
 
-  s.volume = value;
   localStorage.setItem("amb_" + name, value);
 }
 
-/* 💾 restore state */
+/* 💾 restore */
 window.addEventListener("load", () => {
   for (let k in sounds) {
     const v = localStorage.getItem("amb_" + k);
@@ -210,7 +213,6 @@ window.addEventListener("load", () => {
       sounds[k].volume = val;
 
       const slider = document.querySelector(`input[oninput*="${k}"]`);
-
       if (slider) slider.value = val;
     }
   }
