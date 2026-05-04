@@ -150,19 +150,20 @@ function toggleSound(name) {
   }
 }
 
-/* 💾 restore estado */
 window.addEventListener("load", () => {
   for (let k in sounds) {
-    const v = localStorage.getItem("amb_" + k);
+
+    // 💡 forzar apagado SIEMPRE
+    sounds[k].volume = 0;
+    sounds[k].pause();
 
     const item = document.querySelector(`[onclick="toggleSound('${k}')"]`);
     const dot = item ? item.querySelector(".dot") : null;
 
-    if (v !== null && parseFloat(v) > 0) {
-      sounds[k].volume = 0.6;
-      sounds[k].play().catch(()=>{});
-      if (dot) dot.classList.add("active");
-    }
+    if (dot) dot.classList.remove("active");
+
+    // opcional: limpiar storage para evitar re-encendido futuro
+    localStorage.removeItem("amb_" + k);
   }
 });
 
