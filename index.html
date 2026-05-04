@@ -46,9 +46,50 @@ body {
   margin: 0 auto 6px;
 }
 
+/* 🎚 SLIDER BASE */
 .slider {
+  -webkit-appearance: none;
+  appearance: none;
   width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 10px;
+  outline: none;
   margin-top: 6px;
+}
+
+/* 🎚 SLIDER ACTIVE (solo color del slider) */
+.slider.active {
+  background: rgba(205, 227, 194, 0.6);
+}
+
+/* thumb blanco */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -5px;
+  transition: background 0.2s ease;
+}
+
+.slider.active::-webkit-slider-thumb {
+  background: rgba(205, 227, 194, 1);
+}
+
+.slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.slider.active::-moz-range-thumb {
+  background: rgba(205, 227, 194, 1);
 }
 </style>
 </head>
@@ -64,11 +105,11 @@ body {
       oninput="setVolume('coffee', this.value)">
   </div>
 
-  <div class="item" onclick="toggleSound('vinyl')">
-    <img class="icon" src="https://golden-hour-roast.vercel.app/static/media/soundIcon%20(5).4d57f69ccfde00a07624.png">
-    Vinyl
+  <div class="item" onclick="toggleSound('murmur')">
+    <img class="icon" src="https://res.cloudinary.com/df3r3efat/image/upload/v1777918508/cyarqmmebfoebrixawdd.png">
+    Murmur
     <input class="slider" type="range" min="0" max="1" step="0.01"
-      oninput="setVolume('vinyl', this.value)">
+      oninput="setVolume('murmur', this.value)">
   </div>
 
   <div class="item" onclick="toggleSound('fire')">
@@ -89,21 +130,18 @@ body {
 
 <script>
 
-// 🎧 AUDIO ENGINE
 const sounds = {
   coffee: new Audio("CAFE.mp3"),
-  vinyl: new Audio("MURMUR.mp3"),
+  murmur: new Audio("MURMUR.mp3"),
   fire: new Audio("FIRE.mp3"),
   rain: new Audio("RAIN.mp3")
 };
 
-// configuración inicial
 for (let k in sounds) {
   sounds[k].loop = true;
   sounds[k].volume = 0;
 }
 
-// 🔓 desbloquear audio (necesario en navegadores)
 let unlocked = false;
 document.body.addEventListener("click", () => {
   if (unlocked) return;
@@ -117,7 +155,6 @@ document.body.addEventListener("click", () => {
   }
 }, { once: true });
 
-// 🌊 fade suave
 function fade(audio, target) {
   function step() {
     let diff = target - audio.volume;
@@ -133,32 +170,37 @@ function fade(audio, target) {
   step();
 }
 
-// 🎧 activar/desactivar sonido
 function toggleSound(name) {
   const s = sounds[name];
+  const slider = document.querySelector(`input[oninput*="${name}"]`);
 
   if (s.paused || s.volume === 0) {
     s.play();
     fade(s, 0.6);
+    if (slider) slider.classList.add("active");
   } else {
     fade(s, 0);
     setTimeout(() => s.pause(), 800);
+    if (slider) slider.classList.remove("active");
   }
 }
 
-// 🎚 control de volumen
 function setVolume(name, value) {
   const s = sounds[name];
+  const slider = document.querySelector(`input[oninput*="${name}"]`);
   value = parseFloat(value);
 
-  if (value > 0 && s.paused) s.play();
+  if (value > 0) {
+    if (s.paused) s.play();
+    if (slider) slider.classList.add("active");
+  } else {
+    if (slider) slider.classList.remove("active");
+  }
 
   s.volume = value;
-
   localStorage.setItem("amb_" + name, value);
 }
 
-// 💾 restaurar estado
 window.addEventListener("load", () => {
   for (let k in sounds) {
     const v = localStorage.getItem("amb_" + k);
@@ -167,7 +209,12 @@ window.addEventListener("load", () => {
       const val = parseFloat(v);
       sounds[k].volume = val;
 
-      if (val > 0) sounds[k].play().catch(()=>{});
+      const slider = document.querySelector(`input[oninput*="${k}"]`);
+
+      if (val > 0) {
+        sounds[k].play().catch(()=>{});
+        if (slider) slider.classList.add("active");
+      }
     }
   }
 });
